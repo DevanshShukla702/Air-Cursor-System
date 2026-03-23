@@ -91,10 +91,26 @@ def main():
             time.sleep(1.5)
             st.rerun()
 
+    # Mock Content to Demonstrate Scrolling Functionality
+    st.markdown("---")
+    st.markdown("<h2 style='text-align: center; color: #f3f4f6; margin-bottom: 30px;'>Today's Menu Specials</h2>", unsafe_allow_html=True)
+    
+    for i in range(1, 11):
+        with st.container():
+            c1, c2 = st.columns([1, 5])
+            with c1:
+                st.markdown(f"<div style='font-size: 60px; text-align: center;'>🍔</div>", unsafe_allow_html=True)
+            with c2:
+                st.markdown(f"### Special Combo #{i}")
+                st.markdown("Delicious premium combo with fries and a drink. Use your new **Index & Middle Finger** scrolling gesture to browse through this list seamlessly without touching your screen!", unsafe_allow_html=True)
+            st.markdown("<hr style='border: 1px solid #333;'>", unsafe_allow_html=True)
+
     # Footer instruction
     st.markdown("""
-        <div style='position: fixed; bottom: 20px; width: 100%; text-align: center; color: #6b7280;'>
-            <i>Pinch your thumb and index finger together to click</i>
+        <div style='text-align: center; color: #6b7280; margin-top: 50px;'>
+            <i>Pinch your thumb and index finger together to click</i><br>
+            <i>Extend Index and Middle fingers to scroll</i><br>
+            <i>Open your palm entirely to pause cursor movement</i>
         </div>
     """, unsafe_allow_html=True)
 
