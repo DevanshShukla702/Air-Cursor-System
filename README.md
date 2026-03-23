@@ -1,4 +1,4 @@
-# AirCursor System
+# Air-Cursor-System
 
 A gesture-controlled system that allows users to interact with a computer interface without touching any physical surface. The system uses a webcam to detect hand movements and convert them into mouse actions (cursor movement and click).
 
