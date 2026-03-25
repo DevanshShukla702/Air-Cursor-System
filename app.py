@@ -1,40 +1,77 @@
 import streamlit as st
 import time
+import os
+
+def check_gesture_commands():
+    if os.path.exists("gesture_command.txt"):
+        try:
+            with open("gesture_command.txt", "r") as f:
+                cmd = f.read().strip()
+            # Delete file after reading
+            os.remove("gesture_command.txt")
+            
+            if cmd == "HOME" and st.session_state.page != 'Home':
+                navigate_to('Home')
+                st.rerun()
+            elif cmd == "MENU" and st.session_state.page != 'Menu':
+                navigate_to('Menu')
+                st.rerun()
+        except Exception:
+            pass
+
+def initialize_session_state():
+    if 'page' not in st.session_state:
+        st.session_state.page = 'Home'
+    if 'cart' not in st.session_state:
+        st.session_state.cart = []
+    if 'total_price' not in st.session_state:
+        st.session_state.total_price = 0.0
+
+def navigate_to(page_name):
+    st.session_state.page = page_name
+
+def add_to_cart(item, price):
+    st.session_state.cart.append({'item': item, 'price': price})
+    st.session_state.total_price += price
+
+def clear_cart():
+    st.session_state.cart = []
+    st.session_state.total_price = 0.0
 
 def main():
-    st.set_page_config(page_title="AirCursor System", layout="wide", initial_sidebar_state="collapsed")
+    st.set_page_config(page_title="AirCursor System", layout="centered", initial_sidebar_state="collapsed")
+    initialize_session_state()
+    check_gesture_commands()
 
-    # Inject Custom CSS for giant gesture-friendly buttons and layout
+    # Generic Custom CSS to make buttons large for gesture control
     st.markdown("""
         <style>
         /* Base page styling */
         .block-container {
-            padding-top: 2rem !important;
+            padding-top: 1rem !important;
             padding-bottom: 2rem !important;
         }
 
-        /* Large Gesture-Friendly Buttons */
+        /* Make standard Streamlit buttons large */
         div.stButton > button {
             width: 100%;
-            height: 140px;
-            font-size: 36px !important;
-            font-weight: 700;
-            border-radius: 20px;
+            height: 90px;
+            font-size: 26px !important;
+            font-weight: bold;
+            border-radius: 12px;
             background-color: #2b2b2b;
             color: #ffffff;
             border: 2px solid #4ade80;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-bottom: 30px;
-            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 15px;
         }
 
-        /* Hover effects optimized for visual feedback during gesture approach */
         div.stButton > button:hover {
             background-color: #4ade80;
             color: #111827 !important;
             border-color: #22c55e;
             transform: scale(1.02);
-            box-shadow: 0 20px 25px -5px rgba(74, 222, 128, 0.4), 0 10px 10px -5px rgba(74, 222, 128, 0.2);
+            box-shadow: 0 10px 15px -3px rgba(74, 222, 128, 0.4);
         }
         
         div.stButton > button:active {
@@ -42,77 +79,133 @@ def main():
             background-color: #22c55e;
         }
         
-        /* Titles and headers */
         h1 {
             text-align: center;
-            font-size: 4rem;
-            margin-bottom: 1rem;
+            font-size: 3rem;
             color: #f3f4f6;
+            margin-bottom: 0px;
         }
         
         .subtitle {
             text-align: center;
             color: #9ca3af;
-            font-size: 1.5rem;
-            margin-bottom: 3rem;
-            font-weight: 500;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
         }
         </style>
     """, unsafe_allow_html=True)
-
-    # Title Section
-    st.title("AirCursor System")
-    st.markdown("<div class='subtitle'>Use hand gestures to navigate the interface</div>", unsafe_allow_html=True)
-
-    # Placeholders for feedback
-    feedback_placeholder = st.empty()
-
-    # Layout for centering large buttons
-    col1, col2, col3 = st.columns([1, 2, 1])
     
-    with col2:
-        if st.button("🍽️ Browse Menu", use_container_width=True):
-            feedback_placeholder.success("Navigating to Menu...", icon="✅")
-            time.sleep(1.5)
-            st.rerun()
-            
-        if st.button("🛒 Place Order", use_container_width=True):
-            feedback_placeholder.info("Opening Order processing...", icon="✅")
-            time.sleep(1.5)
-            st.rerun()
-            
-        if st.button("🙋 Request Help", use_container_width=True):
-            feedback_placeholder.warning("Calling for assistance. A representative will be with you shortly.", icon="✅")
-            time.sleep(1.5)
-            st.rerun()
-            
-        if st.button("👋 Exit", use_container_width=True):
-            feedback_placeholder.error("Exiting session. Thank you for visiting!", icon="✅")
-            time.sleep(1.5)
-            st.rerun()
-
-    # Mock Content to Demonstrate Scrolling Functionality
-    st.markdown("---")
-    st.markdown("<h2 style='text-align: center; color: #f3f4f6; margin-bottom: 30px;'>Today's Menu Specials</h2>", unsafe_allow_html=True)
+    st.title("Touchless Smart Kiosk")
     
-    for i in range(1, 11):
-        with st.container():
-            c1, c2 = st.columns([1, 5])
-            with c1:
-                st.markdown(f"<div style='font-size: 60px; text-align: center;'>🍔</div>", unsafe_allow_html=True)
-            with c2:
-                st.markdown(f"### Special Combo #{i}")
-                st.markdown("Delicious premium combo with fries and a drink. Use your new **Index & Middle Finger** scrolling gesture to browse through this list seamlessly without touching your screen!", unsafe_allow_html=True)
-            st.markdown("<hr style='border: 1px solid #333;'>", unsafe_allow_html=True)
-
-    # Footer instruction
-    st.markdown("""
-        <div style='text-align: center; color: #6b7280; margin-top: 50px;'>
-            <i>Pinch your thumb and index finger together to click</i><br>
-            <i>Extend Index and Middle fingers to scroll</i><br>
-            <i>Open your palm entirely to pause cursor movement</i>
-        </div>
-    """, unsafe_allow_html=True)
+    # Render logic based on session state page
+    page = st.session_state.page
+    
+    if page == 'Home':
+        st.markdown("<div class='subtitle'>Welcome! Use hand gestures to select an option below:</div>", unsafe_allow_html=True)
+        st.write("")
+        if st.button("🍔 Browse Menu", use_container_width=True):
+            navigate_to('Menu')
+            st.rerun()
+            
+        if st.button("🛒 View Order", use_container_width=True):
+            navigate_to('Order')
+            st.rerun()
+            
+        if st.button("🙋 Help & Instructions", use_container_width=True):
+            navigate_to('Help')
+            st.rerun()
+            
+    elif page == 'Menu':
+        st.markdown("<div class='subtitle'>Select items to add to your cart</div>", unsafe_allow_html=True)
+        
+        if st.button("⬅️ Back to Home", use_container_width=True):
+            navigate_to('Home')
+            st.rerun()
+            
+        st.markdown("---")
+        
+        # Expanded menu items to ensure scrollibility
+        menu_items = [
+            ("🍕 Pizza", 10.00),
+            ("🍔 Burger", 8.00),
+            ("☕ Coffee", 5.00),
+            ("🥪 Sandwich", 6.00),
+            ("🥗 Salad", 7.00),
+            ("🍰 Cheesecake", 4.00),
+            ("🥤 Soda", 2.00),
+            ("🍦 Ice Cream", 3.00),
+            ("🍩 Donut", 2.50),
+            ("🍟 French Fries", 4.50)
+        ]
+        
+        feedback_placeholder = st.empty()
+        
+        for name, price in menu_items:
+            with st.container():
+                col1, col2 = st.columns([3, 2])
+                with col1:
+                    st.markdown(f"### {name}")
+                    st.markdown(f"**Price:** ${price:.2f}")
+                with col2:
+                    st.write("") # spacing alignment
+                    # Unique key for every button
+                    if st.button(f"Add {name.split(' ')[1]}", key=f"add_{name}", use_container_width=True):
+                        add_to_cart(name, price)
+                        feedback_placeholder.success(f"{name} added to cart!")
+                st.markdown("<hr style='border: 1px solid #333;'>", unsafe_allow_html=True)
+                
+    elif page == 'Order':
+        st.markdown("<div class='subtitle'>Review your selected items</div>", unsafe_allow_html=True)
+        
+        if st.button("⬅️ Back to Home", use_container_width=True):
+            navigate_to('Home')
+            st.rerun()
+            
+        st.markdown("---")
+        
+        cart = st.session_state.cart
+        if len(cart) == 0:
+            st.info("Your cart is empty. Go back and browse the menu to add items!")
+        else:
+            for i, item_data in enumerate(cart):
+                col1, col2 = st.columns([3, 1])
+                with col1:
+                    st.markdown(f"**{i+1}. {item_data['item']}**")
+                with col2:
+                    st.markdown(f"${item_data['price']:.2f}")
+            
+            st.markdown("---")
+            st.markdown(f"<h3 style='text-align: right;'>Total: ${st.session_state.total_price:.2f}</h3>", unsafe_allow_html=True)
+            
+            st.write("")
+            colA, colB = st.columns(2)
+            with colA:
+                if st.button("🗑️ Clear Cart", use_container_width=True):
+                    clear_cart()
+                    st.rerun()
+            with colB:
+                if st.button("✅ Checkout", use_container_width=True):
+                    st.success("Order Placed Successfully! Returning to home...")
+                    time.sleep(2)
+                    clear_cart()
+                    navigate_to('Home')
+                    st.rerun()
+                    
+    elif page == 'Help':
+        st.markdown("<div class='subtitle'>Gesture Controls Guide</div>", unsafe_allow_html=True)
+        
+        if st.button("⬅️ Back to Home", use_container_width=True):
+            navigate_to('Home')
+            st.rerun()
+            
+        st.markdown("---")
+        
+        st.info("### 🖱️ Move Cursor\nKeep your **Index Finger** extended to drag the mouse.")
+        st.success("### 👆 Left Click\nPinch your **Thumb** and **Index Finger** together to click buttons.")
+        st.success("### ✌️ Right Click\nPinch your **Thumb** and **Middle Finger** together to right-click.")
+        st.warning("### ↕️ Scroll\nExtend your **Index** and **Middle Fingers** together and move your hand up/down to scroll long pages like the Menu.")
+        st.error("### ↔️ Back / Forward\nExtend at least 3 fingers and quickly swipe your hand **Left** or **Right** to go Back or Forward in your browser.")
+        st.markdown("### ⏸️ Pause Mode\nOpen your palm entirely (all 5 fingers up). The cursor tracking will freeze so you can reposition your hand comfortably.")
 
 if __name__ == "__main__":
     main()
